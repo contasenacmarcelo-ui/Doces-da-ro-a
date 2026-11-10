@@ -6,7 +6,7 @@ async function buscarPedidos(req,res) {
 
         res.json(rows)
     } catch (error) {
-        res.status(500).json({erro: "Erro ao buscar pedidos no banco"})
+        res.status(500).json({erro: "Erro ao buscar os pedidos no banco"})
     }
 }
 
@@ -22,9 +22,9 @@ async function cadastrarPedidos(req,res) {
 
         await pool.execute("INSERT INTO pedidos (nome, email, descricao) VALUES ( ?, ?, ?)"[nome, email, descricao])
 
-        
+        res.json({erro: "Pedido cadastrado com sucesso!"})
     } catch (error) {
-        
+         res.status(500).json({erro: "Erro ao cadastrar os pedidos no banco"})
     }
 }
-export{buscarPedidos}
+export{buscarPedidos, cadastrarPedidos}
