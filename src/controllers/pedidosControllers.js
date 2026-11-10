@@ -6,7 +6,7 @@ async function buscarPedidos(req,res) {
 
         res.json(rows)
     } catch (error) {
-        res.status(500).json({erro: "Erro ao buscar os pedidos no banco"})
+        return  res.status(500).json({erro: "Erro ao buscar os pedidos no banco"})
     }
 }
 
@@ -20,11 +20,43 @@ async function cadastrarPedidos(req,res) {
             res.json("Todos os campos são obrigatórios!")
         }
 
-        await pool.execute("INSERT INTO pedidos (nome, email, descricao) VALUES ( ?, ?, ?)"[nome, email, descricao])
+        await pool.execute("INSERT INTO pedidos (nome, email, descricao) VALUES ( ?, ?, ?)", [nome, email, descricao])
 
-        res.json({erro: "Pedido cadastrado com sucesso!"})
+        res.json({mensagem: "Pedido cadastrado com sucesso!"})
     } catch (error) {
-         res.status(500).json({erro: "Erro ao cadastrar os pedidos no banco"})
+        return  res.status(500).json({erro: "Erro ao cadastrar os pedidos no banco"})
     }
 }
-export{buscarPedidos, cadastrarPedidos}
+
+async function atualizarPedido(req,res) {
+    try {
+        const id = req.params.id 
+
+        const nome = (req.body.nome || "").trim()
+        const email = (req.body.email || "").trim()
+        const descricao = (req.body.descricao || "").trim()
+
+        if(!nome || !email || ! descricao){
+            res.json("Todos os campos são obrigatórios!")
+        }
+
+        await pool.execute("UPDATE pedidos SET nome = ?, email = ? , descricao = ? WHERE id =?", [nome, email, descricao, id])
+
+        res.json({  status:"Pedido atualizado com sucesso!"})
+    } catch (error) {
+        return  res.status(500).json({erro: "Erro ao atualizado os pedidos no banco"})
+    }
+}
+
+async function apagarPedidos(req,res) {
+    try {
+        const id = req.params.id 
+        
+        await pool.execute("DELETE FROM pedidos WHERE id = ?",[id])
+
+         res.json({status:"Pedido deletado com sucesso!"})
+    } catch (error) {
+        return  res.status(500).json({erro: "Erro ao cadastrar os pedidos no banco"})
+    }
+}
+export{buscarPedidos, cadastrarPedidos, atualizarPedido, apagarPedidos}
